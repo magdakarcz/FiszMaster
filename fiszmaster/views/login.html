@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logowanie</title>
+    <!-- UIkit CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.16.25/css/uikit.min.css" />
+    <style>
+        body {
+            background: linear-gradient(to bottom right, #6a11cb, #2575fc);
+            color: #ffffff;
+        }
+        .login-card {
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+        }
+        .login-card h3 {
+            font-weight: bold;
+            color: #333;
+        }
+        .uk-input, .uk-button {
+            border-radius: 8px;
+        }
+        .uk-button-primary {
+            background-color: #2575fc;
+            border-color: #2575fc;
+        }
+        .uk-button-primary:hover {
+            background-color: #1b5bb8;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body class="uk-flex uk-flex-center uk-flex-middle" style="height: 100vh;">
+
+    <!-- Logo Section -->
+    <div class="uk-position-fixed uk-position-top-center uk-padding-small">
+        <a href="/fiszmaster/index.php" class="uk-link-reset logo">FiszMaster</a>
+    </div>
+
+    <!-- Login Card -->
+    <div class="uk-card uk-card-default uk-card-body uk-width-medium login-card">
+        <h3 class="uk-card-title uk-text-center">Zaloguj się, aby się uczyć!</h3>
+        <p class="uk-text-small uk-text-center uk-margin-remove-top">
+            Nie masz konta? <a href="register.html" class="uk-link-text">Rejestracja</a>
+        </p>
+        <form action="../php/login.php" method="post">
+            <div class="uk-margin">
+                <label class="uk-form-label" for="username">Nazwa użytkownika</label>
+                <div class="uk-form-controls">
+                    <input class="uk-input uk-form-large" id="username" name="username" type="text" placeholder="Login" required>
+                </div>
+            </div>
+            <div class="uk-margin">
+                <label class="uk-form-label" for="id_password">Hasło</label>
+                <div class="uk-form-controls">
+                    <input class="uk-input uk-form-large" id="id_password" name="password" type="password" placeholder="Hasło" required>
+                </div>
+                <!-- Forgot Password Link -->
+                <div class="uk-text-right uk-margin-small-top">
+                    <a href="#" class="uk-link-text">Nie pamiętam hasła</a>
+                </div>
+            </div>
+            <div class="uk-margin">
+                <button class="uk-button uk-button-primary uk-width-1-1 uk-button-large" type="submit">Logowanie</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- UIkit JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.16.25/js/uikit.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.16.25/js/uikit-icons.min.js"></script>
+</body>
+</html>
