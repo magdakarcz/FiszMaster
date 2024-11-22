@@ -45,7 +45,6 @@
             </div>
         </nav>
     </div>
-
     <!-- Strona główna -->
     <div uk-height-match id="welcome">
         <div class="uk-grid-collapse uk-child-width-expand@l uk-flex-middle uk-light" uk-grid>
