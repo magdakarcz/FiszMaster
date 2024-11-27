@@ -185,7 +185,7 @@
         <div class="uk-grid-collapse uk-child-width-expand@l uk-flex-middle uk-light" uk-grid>
             <div class="uk-margin-large-top uk-text-center">
                 <div class="uk-padding">
-                    <h1 class="uk-heading-small">Opanuj język z FiszMaster</h1>
+                    <h1 class="uk-heading-small">Opanuj jjjjj język z FiszMaster</h1>
                     <p class="uk-text-lead">Opanuj język, którego chcesz się nauczyć, korzystając z interaktywnych
                         fiszek.</p>
                     <p class="uk-text-lead">
