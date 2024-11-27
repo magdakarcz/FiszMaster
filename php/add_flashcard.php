@@ -23,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (mysqli_query($conn, $sql)) {
         echo "Fiszka została dodana!";
         // Przekierowanie na stronę główną po dodaniu fiszki
-        header("Location: ../index.php");
+        header("Location: ../views/user_flashcards.php");
         exit();
     } else {
         echo "Błąd: " . mysqli_error($conn);

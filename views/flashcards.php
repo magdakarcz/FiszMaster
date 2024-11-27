@@ -4,9 +4,12 @@ if (!isset($_SESSION['user_id'])) {
     echo "Musisz być zalogowany, aby zobaczyć swoje zestawy.";
     exit();
 }
-include '../database_connection.php';
 
-$sql = "SELECT * FROM flashcard_sets";
+include '../database_connection.php';
+$user_id = $_SESSION['user_id'];
+
+// Pobieramy zestawy użytkownika
+$sql = "SELECT * FROM flashcard_sets WHERE user_id = '$user_id'";
 $result = mysqli_query($conn, $sql);
 ?>
 
@@ -15,14 +18,20 @@ $result = mysqli_query($conn, $sql);
 
 <head>
     <meta charset="UTF-8">
-    <title>Wszystkie zestawy</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dodaj Fiszkę</title>
     <!-- UIkit CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.21.13/dist/css/uikit.min.css" />
 
     <!-- UIkit JS -->
     <script src="https://cdn.jsdelivr.net/npm/uikit@3.21.13/dist/js/uikit.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/uikit@3.21.13/dist/js/uikit-icons.min.js"></script>
+    <style>
+        #navLogged {
+            background: linear-gradient(20.78deg, #6e00f8 3.3%, #563ce9 27.67%, #116eee 93.23%);
+            color: white;
+        }
+    </style>
 </head>
 
 <body>
@@ -58,22 +67,22 @@ $result = mysqli_query($conn, $sql);
             <div uk-navbar="align: center">
                 <div class="uk-navbar-center">
                     <ul class="uk-navbar-nav">
-                        <li class="uk-active">
+                        <li>
                             <a>Zestawy</a>
                             <div class="uk-navbar-dropdown">
                                 <ul class="uk-nav uk-navbar-dropdown-nav uk-nav-divider">
-                                    <li class="uk-active"><a href="../php/all_sets.php">Wszystkie zestawy</a></li>
+                                    <li><a href="../php/all_sets.php">Wszystkie zestawy</a></li>
                                     <li><a href="../php/my_sets.php">Moje zestawy</a></li>
                                     <li><a href="../views/create_set.php">Stwórz zestaw</a></li>
                                 </ul>
                             </div>
                         </li>
-                        <li>
+                        <li class="uk-active">
                             <a>Fiszki</a>
                             <div class="uk-navbar-dropdown">
                                 <ul class="uk-nav uk-navbar-dropdown-nav uk-nav-divider">
                                     <li><a href="../views/user_flashcards.php">Moje Fiszki</a></li>
-                                    <li><a href="../views/flashcards.php">Stwórz Fiszkę</a></li>
+                                    <li class="uk-active"><a href="../views/flashcards.php">Stwórz Fiszkę</a></li>
                                 </ul>
                             </div>
                         </li>
@@ -93,32 +102,26 @@ $result = mysqli_query($conn, $sql);
             <hr class="uk-divider-small">
             <ul class="uk-nav uk-nav-default uk-list uk-list-divider">
                 <li><a href="../">Strona główna</a></li>
-                <li class="uk-active"><a href="../php/all_sets.php">Wszystkie zestawy</a></li>
+                <li><a href="../php/all_sets.php">Wszystkie zestawy</a></li>
                 <li><a href="../php/my_sets.php">Moje zestawy</a></li>
                 <li><a href="../views/user_flashcards.php">Moje Fiszki</a></li>
                 <li><a href="../views/create_set.php">Stwórz zestaw</a></li>
-                <li><a href="../views/flashcards.php">Stwórz Fiszkę</a></li>
+                <li class="uk-active"><a href="../views/flashcards.php">Stwórz Fiszkę</a></li>
                 <li><a href="#">Ustawienia</a></li>
             </ul>
         </div>
-        <div class="uk-width-1-2@l uk-width-1-1@s uk-text-bold">
+        <div class="uk-width-3-4@l uk-width-1-1@s uk-text-bold">
             <!-- Zawartość strony -->
-            <h2>Wszystkie zestawy</h2>
-            <?php if (mysqli_num_rows($result) > 0) { ?>
-                <ul>
-                    <?php while ($row = mysqli_fetch_assoc($result)) { ?>
-                        <li>
-                            <h3><?php echo $row['set_name']; ?></h3>
-                            <p><?php echo $row['set_info']; ?></p>
-                        </li>
-                    <?php } ?>
-                </ul>
-            <?php } else { ?>
-                <p>Nie masz jeszcze żadnych zestawów.</p>
-            <?php } ?>
-            <?php
-            echo '<li><a href="../index.php">Strona główna</a></li>';
-            ?>
+            <h2>Dodaj Fiszkę</h2>
+            <form action="../php/add_flashcard.php" method="POST">
+                <label for="term">Pojęcie:</label>
+                <input type="text" id="term" name="term" required><br><br>
+
+                <label for="definition">Definicja:</label>
+                <textarea id="definition" name="definition" required></textarea><br><br>
+
+                <input type="submit" value="Dodaj Fiszkę">
+            </form>
         </div>
     </div>
 </body>

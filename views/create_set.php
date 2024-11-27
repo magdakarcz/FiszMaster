@@ -4,10 +4,9 @@ if (!isset($_SESSION['user_id'])) {
     echo "Musisz być zalogowany, aby zobaczyć swoje zestawy.";
     exit();
 }
-include '../database_connection.php';
 
-$sql = "SELECT * FROM flashcard_sets";
-$result = mysqli_query($conn, $sql);
+include '../database_connection.php';
+$user_id = $_SESSION['user_id'];
 ?>
 
 <!DOCTYPE html>
@@ -15,14 +14,19 @@ $result = mysqli_query($conn, $sql);
 
 <head>
     <meta charset="UTF-8">
-    <title>Wszystkie zestawy</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <title>Tworzenie Zestawu</title>
     <!-- UIkit CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.21.13/dist/css/uikit.min.css" />
 
     <!-- UIkit JS -->
     <script src="https://cdn.jsdelivr.net/npm/uikit@3.21.13/dist/js/uikit.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/uikit@3.21.13/dist/js/uikit-icons.min.js"></script>
+    <style>
+        #navLogged {
+            background: linear-gradient(20.78deg, #6e00f8 3.3%, #563ce9 27.67%, #116eee 93.23%);
+            color: white;
+        }
+    </style>
 </head>
 
 <body>
@@ -62,9 +66,9 @@ $result = mysqli_query($conn, $sql);
                             <a>Zestawy</a>
                             <div class="uk-navbar-dropdown">
                                 <ul class="uk-nav uk-navbar-dropdown-nav uk-nav-divider">
-                                    <li class="uk-active"><a href="../php/all_sets.php">Wszystkie zestawy</a></li>
+                                    <li><a href="../php/all_sets.php">Wszystkie zestawy</a></li>
                                     <li><a href="../php/my_sets.php">Moje zestawy</a></li>
-                                    <li><a href="../views/create_set.php">Stwórz zestaw</a></li>
+                                    <li class="uk-active"><a href="../views/create_set.php">Stwórz zestaw</a></li>
                                 </ul>
                             </div>
                         </li>
@@ -93,34 +97,60 @@ $result = mysqli_query($conn, $sql);
             <hr class="uk-divider-small">
             <ul class="uk-nav uk-nav-default uk-list uk-list-divider">
                 <li><a href="../">Strona główna</a></li>
-                <li class="uk-active"><a href="../php/all_sets.php">Wszystkie zestawy</a></li>
+                <li><a href="../php/all_sets.php">Wszystkie zestawy</a></li>
                 <li><a href="../php/my_sets.php">Moje zestawy</a></li>
                 <li><a href="../views/user_flashcards.php">Moje Fiszki</a></li>
-                <li><a href="../views/create_set.php">Stwórz zestaw</a></li>
+                <li class="uk-active"><a href="../views/create_set.php">Stwórz zestaw</a></li>
                 <li><a href="../views/flashcards.php">Stwórz Fiszkę</a></li>
                 <li><a href="#">Ustawienia</a></li>
             </ul>
         </div>
-        <div class="uk-width-1-2@l uk-width-1-1@s uk-text-bold">
+        <div class="uk-width-3-4@l uk-width-1-1@s uk-text-bold">
             <!-- Zawartość strony -->
-            <h2>Wszystkie zestawy</h2>
-            <?php if (mysqli_num_rows($result) > 0) { ?>
-                <ul>
-                    <?php while ($row = mysqli_fetch_assoc($result)) { ?>
-                        <li>
-                            <h3><?php echo $row['set_name']; ?></h3>
-                            <p><?php echo $row['set_info']; ?></p>
-                        </li>
-                    <?php } ?>
-                </ul>
-            <?php } else { ?>
-                <p>Nie masz jeszcze żadnych zestawów.</p>
-            <?php } ?>
-            <?php
-            echo '<li><a href="../index.php">Strona główna</a></li>';
-            ?>
+            <h2>Tworzenie Zestawu Fiszek</h2>
+            <form action="../php/create_set.php" method="POST">
+                <label for="set_name">Nazwa zestawu:</label><br>
+                <input type="text" id="set_name" name="set_name" required><br><br>
+
+                <label for="set_info">Opis zestawu:</label><br>
+                <textarea id="set_info" name="set_info" required></textarea><br><br>
+
+                <div id="flashcards">
+                    <div class="flashcard">
+                        <label for="term_1">Termin:</label><br>
+                        <input type="text" id="term_1" name="flashcards[0][term]" required><br><br>
+
+                        <label for="definition_1">Definicja:</label><br>
+                        <textarea id="definition_1" name="flashcards[0][definition]" required></textarea><br><br>
+                    </div>
+                </div>
+
+                <button type="button" onclick="addFlashcard()">Dodaj fiszkę</button><br><br>
+                <input type="submit" value="Dodaj zestaw">
+            </form>
         </div>
     </div>
+    <script>
+        let flashcardCount = 1;
+
+        function addFlashcard() {
+            if (flashcardCount < 50) {
+                let flashcardDiv = document.createElement("div");
+                flashcardDiv.classList.add("flashcard");
+
+                flashcardDiv.innerHTML = `
+                    <label for="term_${flashcardCount + 1}">Termin:</label><br>
+                    <input type="text" id="term_${flashcardCount + 1}" name="flashcards[${flashcardCount}][term]" required><br><br>
+                    <label for="definition_${flashcardCount + 1}">Definicja:</label><br>
+                    <textarea id="definition_${flashcardCount + 1}" name="flashcards[${flashcardCount}][definition]" required></textarea><br><br>
+                `;
+                document.getElementById("flashcards").appendChild(flashcardDiv);
+                flashcardCount++;
+            } else {
+                alert("Maksymalna liczba fiszek to 50.");
+            }
+        }
+    </script>
 </body>
 
 </html>
