@@ -50,3 +50,8 @@
     box-shadow: 0px 0px 60px 0px rgba(17, 110, 238, 1);
 }
 
+#navLogged {
+    background: linear-gradient(20.78deg, #6e00f8 3.3%, #563ce9 27.67%, #116eee 93.23%);
+    color: white;
+}
+
