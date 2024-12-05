@@ -1,132 +1,109 @@
 <?php
-session_start();
-if (!isset($_SESSION['user_id'])) {
-    echo "Musisz być zalogowany, aby zobaczyć swoje fiszki.";
-    exit();
-}
-
 include '../database_connection.php';
-$user_id = $_SESSION['user_id'];
+session_start(); // Rozpoczynamy sesję
 
-// Sprawdzamy, czy został podany `set_id`
-if (!isset($_GET['set_id'])) {
-    echo "Nie wybrano zestawu.";
+// Pobieramy ID zestawu z parametrów URL
+$set_id = isset($_GET['set_id']) ? (int) $_GET['set_id'] : 0;
+
+if ($set_id <= 0) {
+    echo "Nieprawidłowy identyfikator zestawu.";
     exit();
 }
 
-$set_id = intval($_GET['set_id']);
+// Pobieramy szczegóły zestawu z bazy danych
+$sql_set = "SELECT * FROM flashcard_sets WHERE id = $set_id";
+$result_set = mysqli_query($conn, $sql_set);
 
-// Pobieramy fiszki dla danego zestawu użytkownika
-$sql = "SELECT * FROM flashcards WHERE user_id = '$user_id' AND set_id = '$set_id'";
-$result = mysqli_query($conn, $sql);
+if ($result_set && mysqli_num_rows($result_set) > 0) {
+    $set = mysqli_fetch_assoc($result_set);
+} else {
+    echo "Zestaw nie został znaleziony.";
+    exit();
+}
+
+// Pobieramy fiszki należące do tego zestawu
+$sql_flashcards = "SELECT * FROM flashcards WHERE set_id = $set_id";
+$result_flashcards = mysqli_query($conn, $sql_flashcards);
 ?>
 
 <!DOCTYPE html>
 <html lang="pl">
+
 <head>
     <meta charset="UTF-8">
-    <title>Fiszki</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo htmlspecialchars($set['set_name'], ENT_QUOTES, 'UTF-8'); ?></title>
+
     <!-- UIkit CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.21.13/dist/css/uikit.min.css" />
+    <link rel="stylesheet" href="../css/uikit.min.css" />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../css/style.css">
 
-    <!-- UIkit JS -->
-    <script src="https://cdn.jsdelivr.net/npm/uikit@3.21.13/dist/js/uikit.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/uikit@3.21.13/dist/js/uikit-icons.min.js"></script>
 </head>
+
 <body>
-    <!-- Nawigacja -->
-    <nav class="uk-navbar-container" id="navLogged">
-        <div class="uk-container">
-            <div uk-navbar>
-                <div class="uk-navbar-left"><a href="/fiszmaster/index.php"
-                        class="uk-link-reset logo uk-text-bold">FiszMaster</a></div>
-                <div class="uk-navbar-right">
-                    <ul class="uk-navbar-nav">
-                        <?php
-                        // Sprawdzamy, czy użytkownik jest zalogowany
-                        if (isset($_SESSION['user_id'])) {
-                            // Użytkownik jest zalogowany, wyświetlamy link do wylogowania
-                            echo '<li><a  href="/php/logout.php"><button class="uk-button uk-button-primary uk-text-bold uk-border-rounded" style="border: 1px solid white;">Wyloguj się</button></a></li>';
-                        } else {
-                            // Użytkownik nie jest zalogowany, wyświetlamy link do logowania
-                            echo '<li><a href="/views/register.html"><button class="uk-button uk-button-primary uk-border-rounded">Zacznij naukę</button></a></li>';
-                            echo '<li><a href="/views/login.html"><button class="uk-button uk-button-default uk-border-rounded">Zaloguj się</button></a></li>';
-                        }
+    <?php include 'sidebar.php'; ?>
 
-                        ?>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </nav>
-    <!-- Boczna nawigacja - TELEFON -->
-    <nav class="uk-navbar-container uk-navbar-transparent uk-hidden@l uk-text-bold" uk-navbar="mode: click"
-        style="border-bottom: 1px solid #e5e5e5;">
-        <div class="uk-container">
-            <div uk-navbar="align: center">
-                <div class="uk-navbar-center">
-                    <ul class="uk-navbar-nav">
-                        <li class="uk-active">
-                            <a>Zestawy</a>
-                            <div class="uk-navbar-dropdown">
-                                <ul class="uk-nav uk-navbar-dropdown-nav uk-nav-divider">
-                                    <li><a href="../php/all_sets.php">Wszystkie zestawy</a></li>
-                                    <li class="uk-active"><a href="../php/my_sets.php">Moje zestawy</a></li>
-                                    <li><a href="../views/create_set.php">Stwórz zestaw</a></li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li>
-                            <a>Fiszki</a>
-                            <div class="uk-navbar-dropdown">
-                                <ul class="uk-nav uk-navbar-dropdown-nav uk-nav-divider">
-                                    <li><a href="../views/user_flashcards.php">Moje Fiszki</a></li>
-                                    <li><a href="../views/flashcards.php">Stwórz Fiszkę</a></li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li>
-                            <a href="#">Ustawienia</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <!-- Main Content -->
+    <div class="main-content uk-container">
+        <header>
+            <h1><?php echo htmlspecialchars($set['set_name'], ENT_QUOTES, 'UTF-8'); ?></h1>
+            <p><?php echo htmlspecialchars($set['set_info'], ENT_QUOTES, 'UTF-8'); ?></p>
+        </header>
 
-    <div class="uk-grid-collapse uk-padding-large uk-grid-divider" uk-grid>
-        <!-- Boczna nawigacja - KOMPUTER -->
-        <div class="uk-width-1-5@l uk-visible@l uk-text-bold">
-            <h2>FiszMaster</h2>
-            <hr class="uk-divider-small">
-            <ul class="uk-nav uk-nav-default uk-list uk-list-divider">
-                <li><a href="../">Strona główna</a></li>
-                <li><a href="../php/all_sets.php">Wszystkie zestawy</a></li>
-                <li class="uk-active"><a href="../php/my_sets.php">Moje zestawy</a></li>
-                <li><a href="../views/user_flashcards.php">Moje Fiszki</a></li>
-                <li><a href="../views/create_set.php">Stwórz zestaw</a></li>
-                <li><a href="../views/flashcards.php">Stwórz Fiszkę</a></li>
-                <li><a href="#">Ustawienia</a></li>
+        <h2>Fiszki w zestawie</h2>
+
+        <?php if ($result_flashcards && mysqli_num_rows($result_flashcards) > 0) { ?>
+            <ul class="uk-list uk-list-divider">
+                <?php while ($flashcard = mysqli_fetch_assoc($result_flashcards)) { ?>
+                    <li>
+                        <div class="flashcard-item">
+                            <!-- Pytanie and Term -->
+                            <div class="term">
+                                <strong>Pytanie:</strong>
+                                <?php echo htmlspecialchars($flashcard['term'], ENT_QUOTES, 'UTF-8'); ?>
+                            </div>
+                            <!-- Spacer between question and answer -->
+                            <span class="space"> &nbsp; </span>
+                            <!-- Odpowiedź and Definition -->
+                            <div class="definition">
+                                <strong>Odpowiedź:</strong>
+                                <?php echo htmlspecialchars($flashcard['definition'], ENT_QUOTES, 'UTF-8'); ?>
+                            </div>
+                        </div>
+                    </li>
+                <?php } ?>
             </ul>
+            <div class="uk-margin-top">
+                <a href="learn_flashcards.php?set_id=<?php echo $set_id; ?>" class="uk-button uk-button-primary">Ucz się z
+                    fiszek</a>
+                <a href="study_mode.php?set_id=<?php echo $set_id; ?>" class="uk-button uk-button-primary">Test</a>
+            <?php } else { ?>
+                <p>Ten zestaw nie zawiera jeszcze żadnych fiszek.</p>
+                <div class="uk-margin-top">
+                    <a style="background-color: grey; opacity: 0.5" class="uk-button uk-button-primary uk-link-muted">Ucz
+                        się z fiszek</a>
+                    <a style="background-color: grey; opacity: 0.5" class="uk-button uk-button-primary uk-link-muted">Test</a>
+                <?php } ?>
+                <a href="all_sets.php" class="uk-button uk-button-default uk-border-rounded">Powrót do listy</a>
+            </div>
         </div>
-        <div class="uk-width-3-4@l uk-width-1-1@s uk-text-bold">
-            <!-- Zawartość strony -->
-    <h2>Fiszki</h2>
-    <?php if (mysqli_num_rows($result) > 0) { ?>
-        <div class="flashcards">
-            <?php while ($row = mysqli_fetch_assoc($result)) { ?>
-                <div class="flashcard">
-                    <p><strong>Termin:</strong> <?php echo htmlspecialchars($row['term'], ENT_QUOTES, 'UTF-8'); ?></p>
-                    <p><strong>Definicja:</strong> <?php echo htmlspecialchars($row['definition'], ENT_QUOTES, 'UTF-8'); ?></p>
-                </div>
-            <?php } ?>
-        </div>
-    <?php } else { ?>
-        <p>Nie znaleziono fiszek w tym zestawie.</p>
-    <?php } ?>
-    <a href="my_sets.php">Powrót do zestawów</a>
-    </div>
-    </div>
+
+        <!-- UIkit JS -->
+        <script src="https://cdn.jsdelivr.net/npm/uikit@3.21.13/dist/js/uikit.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/uikit@3.21.13/dist/js/uikit-icons.min.js"></script>
+        <script>
+            // Get the sidebar and toggle button elements
+            const toggleNavButton = document.getElementById('toggle-nav-button');
+            const sidebar = document.getElementById('sidebar');
+
+            // Add click event listener to the toggle button
+            toggleNavButton.addEventListener('click', () => {
+                // Toggle the narrow class to shrink/expand the sidebar
+                sidebar.classList.toggle('narrow');
+            });
+
+        </script>
 </body>
+
 </html>

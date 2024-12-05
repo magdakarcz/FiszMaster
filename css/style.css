@@ -1,3 +1,4 @@
+
 .flashcards-container {
     display: flex;
     flex-wrap: wrap;
@@ -6,20 +7,69 @@
 }
 
 .flashcard {
-    background-color: #fff;
-    border: 1px solid #ccc;
     padding: 20px;
-    width: 200px;
-    height: 150px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    text-align: center;
-    transition: transform 0.3s;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
 }
+
+.flashcard-item {
+    display: flex;  /* Align both Pytanie and Odpowiedź horizontally */
+    align-items: center;  /* Vertically center both items */
+    gap: 20px;  /* Add space between the two sections (question & answer) */
+}
+
+.term, .definition {
+    display: flex;
+    align-items: center;
+}
+
+.term strong, .definition strong {
+    margin-right: 5px;  /* Optional: adds some space after the label */
+}
+
+.flashcard-item strong {
+    margin-right: 12px;  /* Small space after the label, if necessary */
+}
+
+.uk-input, .uk-textarea {
+    width: 100%; /* Make inputs stretch across the container */
+    max-width: none; /* Remove any width restrictions */
+    border-radius: 6px; /* Rounded corners for the input boxes */
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc; /* Light border for inputs */
+}
+
+.uk-input:focus, .uk-textarea:focus {
+    border-color: #6e00f8; /* Highlight input field border on focus */
+    outline: none;
+}
+
+.uk-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: #6e00f8;
+    color: white;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+}
+
+.uk-button:hover {
+    background-color: #563ce9;
+}
+
+.uk-textarea {
+    resize: vertical; /* Allow users to resize text area vertically */
+}
+
+.uk-margin {
+    margin-bottom: 15px;
+}
+
 
 .flashcard:hover {
     transform: scale(1.1);
@@ -55,3 +105,223 @@
     color: white;
 }
 
+#search-bar{
+    width:400px;
+}
+
+/* General Styling */
+body {
+    font-family: 'Inter', sans-serif; /* Sleek modern font */
+    background-color: #f5f6f8;
+    display: flex;
+}
+
+.main-content {
+    padding: 30px;
+    flex-grow: 1;
+    transition: margin-left 0.3s ease; /* Smooth transition for margin */
+}
+
+/* Sidebar Styling */
+.sidebar {
+    background: linear-gradient(180deg, #2575fc, #6a11cb);
+    color: white;
+    width: 250px;  /* Default width */
+    height: 100vh; /* Full height of the viewport */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    position: fixed;  /* Fix the sidebar to the left of the screen */
+    top: 0;  /* Align it to the top */
+    left: 0;  /* Align it to the left */
+    transition: width 0.3s ease;  /* Smooth transition for width */
+}
+
+.sidebar:not(.narrow) + .main-content {
+    margin-left: 290px; /* Space for the expanded sidebar */
+}
+
+/* Main Content without Sidebar Offset when Narrow */
+.sidebar.narrow + .main-content {
+    margin-left: 90px; /* Smaller margin when sidebar is narrow */
+}
+
+/* Logo Container - Minimize the logo in narrow sidebar */
+.logo-container {
+    display: flex;
+    justify-content: center;
+    transition: width 0.3s ease;
+}
+
+.sidebar.narrow .logo-container img {
+    width: 50px;  /* Minimized logo size */
+    height: auto;
+    transition: width 0.3s ease;  /* Smooth transition */
+}
+
+.sidebar.narrow {
+    width: 60px;  /* Narrow width when toggled */
+}
+
+/* Sidebar links styling */
+.sidebar li {
+    margin: 15px 0;
+    display: flex;
+    align-items: center;
+}
+
+/* Hide text when sidebar is narrow */
+.sidebar.narrow li a span {
+    display: none; /* Hide text */
+}
+
+
+.sidebar.narrow li a {
+    font-size: 12px;  /* Reduce font size when narrow */
+}
+
+.sidebar.narrow li a i {
+    margin-right: 0;  /* Remove space between icon and text */
+}
+
+.sidebar img {
+    max-width: 150px;
+    margin: 0 auto 20px;
+    display: block;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: auto;
+}
+
+.sidebar li {
+    margin: 15px 0;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar li a {
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: transform 0.3s ease;
+}
+
+.sidebar li a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.sidebar li a i {
+    margin-right: 10px;
+}
+
+.sidebar li a span {
+    margin-left: 10px; /* Space between icon and text */
+}
+
+.logout-btn {
+    margin-top: 20px;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 6px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.logout-btn:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+}
+
+/* Center the hamburger icon inside its button */
+#toggle-nav-button {
+    display: flex;             /* Make button a flex container */
+    justify-content: center;   /* Center the icon horizontally */
+    align-items: center;       /* Center the icon vertically */
+    width: 40px;               /* Define width of button */
+    height: 40px;              /* Define height of button */
+    color: white;
+    padding: 10px;
+    border-radius: 20%;        /* Make button circular */
+    border: none;
+    background-color: transparent; /* Optional: Set transparent background */
+}
+
+/* Optional: Adjust the icon size inside the button */
+#toggle-nav-button uk-icon {
+    font-size: 20px;           /* Adjust icon size */
+    color: white;
+}
+
+
+#toggle-nav-button:hover {
+    background-color: #6a11cb;
+}
+
+/* Main Content */
+.main-content {
+    flex-grow: 1;
+    padding: 30px;
+}
+
+/* Search Bar */
+.search-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.search-bar input {
+    flex-grow: 1;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-bar button {
+    padding: 10px 20px;
+    border: none;
+    background: linear-gradient(to right, #6a11cb, #2575fc);
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.search-bar button:hover {
+    background: linear-gradient(to right, #2575fc, #6a11cb);
+}
+
+/* Card Styling */
+.uk-card {
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.uk-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.uk-card h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.uk-card p {
+    color: #666;
+    font-size: 14px;
+}

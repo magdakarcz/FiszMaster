@@ -1,126 +1,76 @@
 <?php
-session_start();
-if (!isset($_SESSION['user_id'])) {
-    echo "Musisz być zalogowany, aby zobaczyć swoje zestawy.";
-    exit();
-}
 include '../database_connection.php';
+session_start(); // Rozpoczynamy sesję
 
+// Pobieramy zapytanie wyszukiwania z formularza
+$search_query = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
+
+// Tworzymy zapytanie SQL z warunkiem wyszukiwania
 $sql = "SELECT * FROM flashcard_sets";
+if (!empty($search_query)) {
+    $sql .= " WHERE set_name LIKE '%$search_query%'";
+}
 $result = mysqli_query($conn, $sql);
 ?>
 
 <!DOCTYPE html>
 <html lang="pl">
-
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wszystkie zestawy</title>
-    <link rel="stylesheet" href="../css/style.css">
-    <!-- UIkit CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.21.13/dist/css/uikit.min.css" />
-
-    <!-- UIkit JS -->
     <script src="https://cdn.jsdelivr.net/npm/uikit@3.21.13/dist/js/uikit.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/uikit@3.21.13/dist/js/uikit-icons.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+   
 </head>
-
 <body>
-    <!-- Nawigacja -->
-    <nav class="uk-navbar-container" id="navLogged">
-        <div class="uk-container">
-            <div uk-navbar>
-                <div class="uk-navbar-left"><a href="/fiszmaster/index.php"
-                        class="uk-link-reset logo uk-text-bold">FiszMaster</a></div>
-                <div class="uk-navbar-right">
-                    <ul class="uk-navbar-nav">
-                        <?php
-                        // Sprawdzamy, czy użytkownik jest zalogowany
-                        if (isset($_SESSION['user_id'])) {
-                            // Użytkownik jest zalogowany, wyświetlamy link do wylogowania
-                            echo '<li><a  href="/php/logout.php"><button class="uk-button uk-button-primary uk-text-bold uk-border-rounded" style="border: 1px solid white;">Wyloguj się</button></a></li>';
-                        } else {
-                            // Użytkownik nie jest zalogowany, wyświetlamy link do logowania
-                            echo '<li><a href="/views/register.html"><button class="uk-button uk-button-primary uk-border-rounded">Zacznij naukę</button></a></li>';
-                            echo '<li><a href="/views/login.html"><button class="uk-button uk-button-default uk-border-rounded">Zaloguj się</button></a></li>';
-                        }
+<?php include 'sidebar.php'; ?>
 
-                        ?>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </nav>
-    <!-- Boczna nawigacja - TELEFON -->
-    <nav class="uk-navbar-container uk-navbar-transparent uk-hidden@l uk-text-bold" uk-navbar="mode: click"
-        style="border-bottom: 1px solid #e5e5e5;">
-        <div class="uk-container">
-            <div uk-navbar="align: center">
-                <div class="uk-navbar-center">
-                    <ul class="uk-navbar-nav">
-                        <li class="uk-active">
-                            <a>Zestawy</a>
-                            <div class="uk-navbar-dropdown">
-                                <ul class="uk-nav uk-navbar-dropdown-nav uk-nav-divider">
-                                    <li class="uk-active"><a href="../php/all_sets.php">Wszystkie zestawy</a></li>
-                                    <li><a href="../php/my_sets.php">Moje zestawy</a></li>
-                                    <li><a href="../views/create_set.php">Stwórz zestaw</a></li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li>
-                            <a>Fiszki</a>
-                            <div class="uk-navbar-dropdown">
-                                <ul class="uk-nav uk-navbar-dropdown-nav uk-nav-divider">
-                                    <li><a href="../views/user_flashcards.php">Moje Fiszki</a></li>
-                                    <li><a href="../views/flashcards.php">Stwórz Fiszkę</a></li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li>
-                            <a href="#">Ustawienia</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <!-- Main Content -->
+    <div class="main-content">
+        <form method="GET" action="all_sets.php" class="search-bar">
+            <input type="text" name="search" placeholder="Szukaj zestawów..." 
+                   value="<?php echo htmlspecialchars($search_query, ENT_QUOTES, 'UTF-8'); ?>">
+            <button type="submit">Szukaj</button>
+        </form>
 
-    <div class="uk-grid-collapse uk-padding-large uk-grid-divider" uk-grid>
-        <!-- Boczna nawigacja - KOMPUTER -->
-        <div class="uk-width-1-5@l uk-visible@l uk-text-bold">
-            <h2>FiszMaster</h2>
-            <hr class="uk-divider-small">
-            <ul class="uk-nav uk-nav-default uk-list uk-list-divider">
-                <li><a href="../">Strona główna</a></li>
-                <li class="uk-active"><a href="../php/all_sets.php">Wszystkie zestawy</a></li>
-                <li><a href="../php/my_sets.php">Moje zestawy</a></li>
-                <li><a href="../views/user_flashcards.php">Moje Fiszki</a></li>
-                <li><a href="../views/create_set.php">Stwórz zestaw</a></li>
-                <li><a href="../views/flashcards.php">Stwórz Fiszkę</a></li>
-                <li><a href="#">Ustawienia</a></li>
-            </ul>
-        </div>
-        <div class="uk-width-1-2@l uk-width-1-1@s uk-text-bold">
-            <!-- Zawartość strony -->
-            <h2>Wszystkie zestawy</h2>
-            <?php if (mysqli_num_rows($result) > 0) { ?>
-                <ul>
-                    <?php while ($row = mysqli_fetch_assoc($result)) { ?>
-                        <li>
-                            <h3><?php echo $row['set_name']; ?></h3>
-                            <p><?php echo $row['set_info']; ?></p>
-                        </li>
-                    <?php } ?>
-                </ul>
-            <?php } else { ?>
-                <p>Nie masz jeszcze żadnych zestawów.</p>
-            <?php } ?>
-            <?php
-            echo '<li><a href="../index.php">Strona główna</a></li>';
-            ?>
-        </div>
+        <h2>Wszystkie zestawy</h2>
+        <hr>
+        
+        <?php if (mysqli_num_rows($result) > 0): ?>
+            <div class="uk-child-width-1-2@l uk-grid-match" uk-grid>
+                <?php while ($row = mysqli_fetch_assoc($result)): ?>
+                    <div>
+                        <div class="uk-card uk-card-default uk-card-hover uk-card-body">
+                            <a href="display_flashcards.php?set_id=<?php echo $row['id']; ?>" style="text-decoration: none;">
+                                <h3><?php echo htmlspecialchars($row['set_name'], ENT_QUOTES, 'UTF-8'); ?></h3>
+                                <p><?php echo htmlspecialchars($row['set_info'], ENT_QUOTES, 'UTF-8'); ?></p>
+                                <b>Język</b>: <?php echo htmlspecialchars($row['set_language'], ENT_QUOTES, 'UTF-8'); ?>, 
+                                <b>Poziom</b>: <?php echo htmlspecialchars($row['set_level'], ENT_QUOTES, 'UTF-8'); ?>
+                            </a>
+                        </div>
+                    </div>
+                <?php endwhile; ?>
+            </div>
+        <?php else: ?>
+            <p>Nie masz jeszcze żadnych zestawów.</p>
+        <?php endif; ?>
     </div>
-</body>
 
+    <script>
+// Get the sidebar and toggle button elements
+const toggleNavButton = document.getElementById('toggle-nav-button');
+const sidebar = document.getElementById('sidebar');
+
+// Add click event listener to the toggle button
+toggleNavButton.addEventListener('click', () => {
+    // Toggle the narrow class to shrink/expand the sidebar
+    sidebar.classList.toggle('narrow');
+});
+
+    </script>
+</body>
 </html>

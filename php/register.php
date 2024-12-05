@@ -24,7 +24,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Zabezpieczenie przed SQL Injection
-    $username = mysqli_real_escape_string($conn, $username);  // Załóżmy, że połączenie jest w $conn
+    $username = mysqli_real_escape_string($conn, $username);
+    $password = mysqli_real_escape_string($conn, $password);
 
     // Zapytanie sprawdzające, czy użytkownik już istnieje w bazie
     $sql_check = "SELECT * FROM user WHERE username = '$username'";
@@ -33,15 +34,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (mysqli_num_rows($result) > 0) {
         echo "Użytkownik o tej nazwie już istnieje.";
     } else {
-        // Haszowanie hasła przed zapisaniem do bazy
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        // Jeśli użytkownik nie istnieje, dodajemy go do bazy
+        $sql_insert = "INSERT INTO user (username, password) VALUES ('$username', '$password')";
 
-        // Jeśli użytkownik nie istnieje, dodajemy go do bazy (przechowujemy hasło w postaci haszowanej)
-        $sql_insert = "INSERT INTO user (username, password) VALUES ('$username', '$hashed_password')";
-        
         if (mysqli_query($conn, $sql_insert)) {
             // Po dodaniu użytkownika do bazy, pobieramy jego id
-            $user_id = mysqli_insert_id($conn);  // Pobieramy ID ostatnio dodanego użytkownika
+            $user_id = mysqli_insert_id($conn); // Pobieramy ID ostatnio dodanego użytkownika
 
             // Ustawiamy sesję na id
             $_SESSION['user_id'] = $user_id;

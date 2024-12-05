@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Użytkownik istnieje, logowanie udane
         $row = $result->fetch_assoc();
         $_SESSION['user_id'] = $row['id']; // Ustawienie `user_id` w sesji
-        header("Location: ../index.php"); // Przekierowanie na stronę index.html
+        header("Location: all_sets.php"); // Przekierowanie na stronę index.html
         exit(); // Ważne, aby zakończyć działanie skryptu
     } else {
         echo "Błędna nazwa użytkownika lub hasło.";

@@ -11,14 +11,19 @@ if (!isset($_SESSION['user_id'])) {
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $set_name = $_POST['set_name'];
     $set_info = $_POST['set_info'];
+    $set_language = $_POST['set_language'];
+    $set_level = $_POST['set_level'];
     $user_id = $_SESSION['user_id']; // Pobieramy user_id z sesji
 
     // Sanityzacja danych wejściowych
     $set_name = mysqli_real_escape_string($conn, $set_name);
     $set_info = mysqli_real_escape_string($conn, $set_info);
+    $set_language = mysqli_real_escape_string($conn, $set_language);
+    $set_level = mysqli_real_escape_string($conn, $set_level);
 
     // Dodanie zestawu fiszek do bazy danych
-    $sql_set = "INSERT INTO flashcard_sets (set_name, set_info, user_id) VALUES ('$set_name', '$set_info', '$user_id')";
+    $sql_set = "INSERT INTO flashcard_sets (set_name, set_info, set_language, set_level, user_id)
+     VALUES ('$set_name', '$set_info', '$set_language', '$set_level', '$user_id')";
     if (mysqli_query($conn, $sql_set)) {
         // Pobranie ID dodanego zestawu
         $set_id = mysqli_insert_id($conn);

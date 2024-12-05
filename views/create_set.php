@@ -1,156 +1,140 @@
-<?php
-session_start();
-if (!isset($_SESSION['user_id'])) {
-    echo "Musisz być zalogowany, aby zobaczyć swoje zestawy.";
-    exit();
-}
-
-include '../database_connection.php';
-$user_id = $_SESSION['user_id'];
-?>
-
 <!DOCTYPE html>
 <html lang="pl">
-
 <head>
     <meta charset="UTF-8">
-    <title>Tworzenie Zestawu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stwórz zestaw</title>
+
     <!-- UIkit CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.21.13/dist/css/uikit.min.css" />
 
     <!-- UIkit JS -->
     <script src="https://cdn.jsdelivr.net/npm/uikit@3.21.13/dist/js/uikit.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/uikit@3.21.13/dist/js/uikit-icons.min.js"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../css/style.css">
     <style>
-        #navLogged {
-            background: linear-gradient(20.78deg, #6e00f8 3.3%, #563ce9 27.67%, #116eee 93.23%);
-            color: white;
+        /* Custom Styling */
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .main-content {
+            padding: 20px;
+            max-width: 100%;
+        }
+
+        form {
+            max-width: 800px;
+        }
+
+        h1, h2, h3 {
+            margin: 10px 0;
         }
     </style>
 </head>
-
 <body>
-    <!-- Nawigacja -->
-    <nav class="uk-navbar-container" id="navLogged">
-        <div class="uk-container">
-            <div uk-navbar>
-                <div class="uk-navbar-left"><a href="/fiszmaster/index.php"
-                        class="uk-link-reset logo uk-text-bold">FiszMaster</a></div>
-                <div class="uk-navbar-right">
-                    <ul class="uk-navbar-nav">
-                        <?php
-                        // Sprawdzamy, czy użytkownik jest zalogowany
-                        if (isset($_SESSION['user_id'])) {
-                            // Użytkownik jest zalogowany, wyświetlamy link do wylogowania
-                            echo '<li><a  href="/php/logout.php"><button class="uk-button uk-button-primary uk-text-bold uk-border-rounded" style="border: 1px solid white;">Wyloguj się</button></a></li>';
-                        } else {
-                            // Użytkownik nie jest zalogowany, wyświetlamy link do logowania
-                            echo '<li><a href="/views/register.html"><button class="uk-button uk-button-primary uk-border-rounded">Zacznij naukę</button></a></li>';
-                            echo '<li><a href="/views/login.html"><button class="uk-button uk-button-default uk-border-rounded">Zaloguj się</button></a></li>';
-                        }
+<?php include 'sidebar.php'; ?>
 
-                        ?>
-                    </ul>
-                </div>
+<!-- Main Content -->
+<div class="main-content">
+    <!-- Page Header -->
+    <header>
+        <h1>Stwórz nowy zestaw</h1>
+        <p>Wypełnij formularz, aby stworzyć nowy zestaw fiszek.</p>
+    </header>
+    <hr>
+
+    <!-- Form Section -->
+    <form action="../php/create_set.php" method="POST" class="uk-form-stacked uk-margin-top">
+        <!-- Set Details -->
+        <div class="uk-margin">
+            <label for="set_name" class="uk-form-label">Nazwa zestawu:</label>
+            <div class="uk-form-controls">
+                <input class="uk-input" type="text" id="set_name" name="set_name" placeholder="Wprowadź nazwę zestawu" required>
             </div>
         </div>
-    </nav>
-    <!-- Boczna nawigacja - TELEFON -->
-    <nav class="uk-navbar-container uk-navbar-transparent uk-hidden@l uk-text-bold" uk-navbar="mode: click"
-        style="border-bottom: 1px solid #e5e5e5;">
-        <div class="uk-container">
-            <div uk-navbar="align: center">
-                <div class="uk-navbar-center">
-                    <ul class="uk-navbar-nav">
-                        <li class="uk-active">
-                            <a>Zestawy</a>
-                            <div class="uk-navbar-dropdown">
-                                <ul class="uk-nav uk-navbar-dropdown-nav uk-nav-divider">
-                                    <li><a href="../php/all_sets.php">Wszystkie zestawy</a></li>
-                                    <li><a href="../php/my_sets.php">Moje zestawy</a></li>
-                                    <li class="uk-active"><a href="../views/create_set.php">Stwórz zestaw</a></li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li>
-                            <a>Fiszki</a>
-                            <div class="uk-navbar-dropdown">
-                                <ul class="uk-nav uk-navbar-dropdown-nav uk-nav-divider">
-                                    <li><a href="../views/user_flashcards.php">Moje Fiszki</a></li>
-                                    <li><a href="../views/flashcards.php">Stwórz Fiszkę</a></li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li>
-                            <a href="#">Ustawienia</a>
-                        </li>
-                    </ul>
-                </div>
+
+        <div class="uk-margin">
+            <label for="set_info" class="uk-form-label">Opis zestawu:</label>
+            <div class="uk-form-controls">
+                <textarea class="uk-textarea" id="set_info" name="set_info" rows="3" placeholder="Wprowadź opis zestawu" required></textarea>
             </div>
         </div>
-    </nav>
 
-    <div class="uk-grid-collapse uk-padding-large uk-grid-divider" uk-grid>
-        <!-- Boczna nawigacja - KOMPUTER -->
-        <div class="uk-width-1-5@l uk-visible@l uk-text-bold">
-            <h2>FiszMaster</h2>
-            <hr class="uk-divider-small">
-            <ul class="uk-nav uk-nav-default uk-list uk-list-divider">
-                <li><a href="../">Strona główna</a></li>
-                <li><a href="../php/all_sets.php">Wszystkie zestawy</a></li>
-                <li><a href="../php/my_sets.php">Moje zestawy</a></li>
-                <li><a href="../views/user_flashcards.php">Moje Fiszki</a></li>
-                <li class="uk-active"><a href="../views/create_set.php">Stwórz zestaw</a></li>
-                <li><a href="../views/flashcards.php">Stwórz Fiszkę</a></li>
-                <li><a href="#">Ustawienia</a></li>
-            </ul>
+        <div class="uk-margin">
+            <label for="set_language" class="uk-form-label">Język:</label>
+            <div class="uk-form-controls">
+                <input class="uk-input" type="text" id="set_language" name="set_language" placeholder="Wprowadź język" required>
+            </div>
         </div>
-        <div class="uk-width-3-4@l uk-width-1-1@s uk-text-bold">
-            <!-- Zawartość strony -->
-            <h2>Tworzenie Zestawu Fiszek</h2>
-            <form action="../php/create_set.php" method="POST">
-                <label for="set_name">Nazwa zestawu:</label><br>
-                <input type="text" id="set_name" name="set_name" required><br><br>
 
-                <label for="set_info">Opis zestawu:</label><br>
-                <textarea id="set_info" name="set_info" required></textarea><br><br>
+        <div class="uk-margin">
+            <label for="set_level" class="uk-form-label">Poziom:</label>
+            <div class="uk-form-controls">
+                <input class="uk-input" type="text" id="set_level" name="set_level" placeholder="Wprowadź poziom (np. podstawowy)" required>
+            </div>
+        </div>
 
-                <div id="flashcards">
-                    <div class="flashcard">
-                        <label for="term_1">Termin:</label><br>
-                        <input type="text" id="term_1" name="flashcards[0][term]" required><br><br>
+        <!-- Flashcards Section -->
+<div id="flashcards" class="uk-margin">
+    <h3>Dodaj fiszki:</h3>
+    <div class="flashcard uk-margin uk-card uk-card-default uk-card-body" style="max-width: 100%;">
+        <div class="uk-margin">
+            <label for="term_1">Termin:</label>
+            <input class="uk-input uk-form-width-large" type="text" id="term_1" name="flashcards[0][term]" placeholder="Wprowadź termin" required>
+        </div>
 
-                        <label for="definition_1">Definicja:</label><br>
-                        <textarea id="definition_1" name="flashcards[0][definition]" required></textarea><br><br>
-                    </div>
-                </div>
-
-                <button type="button" onclick="addFlashcard()">Dodaj fiszkę</button><br><br>
-                <input type="submit" value="Dodaj zestaw">
-            </form>
+        <div class="uk-margin">
+            <label for="definition_1">Definicja:</label>
+            <textarea class="uk-textarea uk-form-width-large" id="definition_1" name="flashcards[0][definition]" placeholder="Wprowadź definicję" rows="3" required></textarea>
         </div>
     </div>
+</div>
+
+<button type="button" class="uk-button uk-button-secondary uk-border-rounded" onclick="addFlashcard()">Dodaj fiszkę</button>
+<input type="submit" class="uk-button uk-button-primary uk-border-rounded" value="Dodaj zestaw">
+    </form>
+</div>
+
     <script>
-        let flashcardCount = 1;
+       let flashcardCount = 1;
 
-        function addFlashcard() {
-            if (flashcardCount < 50) {
-                let flashcardDiv = document.createElement("div");
-                flashcardDiv.classList.add("flashcard");
+function addFlashcard() {
+    if (flashcardCount < 50) {
+        let flashcardDiv = document.createElement("div");
+        flashcardDiv.classList.add("flashcard", "uk-margin", "uk-card", "uk-card-default", "uk-card-body");
 
-                flashcardDiv.innerHTML = `
-                    <label for="term_${flashcardCount + 1}">Termin:</label><br>
-                    <input type="text" id="term_${flashcardCount + 1}" name="flashcards[${flashcardCount}][term]" required><br><br>
-                    <label for="definition_${flashcardCount + 1}">Definicja:</label><br>
-                    <textarea id="definition_${flashcardCount + 1}" name="flashcards[${flashcardCount}][definition]" required></textarea><br><br>
-                `;
-                document.getElementById("flashcards").appendChild(flashcardDiv);
-                flashcardCount++;
-            } else {
-                alert("Maksymalna liczba fiszek to 50.");
-            }
-        }
+        flashcardDiv.innerHTML = `
+            <div class="uk-margin">
+                <label for="term_${flashcardCount + 1}">Termin:</label>
+                <input class="uk-input uk-form-width-large" type="text" id="term_${flashcardCount + 1}" name="flashcards[${flashcardCount}][term]" placeholder="Wprowadź termin" required>
+            </div>
+
+            <div class="uk-margin">
+                <label for="definition_${flashcardCount + 1}">Definicja:</label>
+                <textarea class="uk-textarea uk-form-width-large" id="definition_${flashcardCount + 1}" name="flashcards[${flashcardCount}][definition]" placeholder="Wprowadź definicję" rows="3" required></textarea>
+            </div>
+        `;
+        
+        document.getElementById("flashcards").appendChild(flashcardDiv);
+        flashcardCount++;
+    } else {
+        alert("Maksymalna liczba fiszek to 50.");
+    }
+}
+
+const toggleNavButton = document.getElementById('toggle-nav-button');
+const sidebar = document.getElementById('sidebar');
+
+toggleNavButton.addEventListener('click', () => {
+    sidebar.classList.toggle('narrow');
+});
+
     </script>
-</body>
-
-</html>

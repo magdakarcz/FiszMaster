@@ -8,6 +8,6 @@ session_unset();
 session_destroy();
 
 // Przekierowanie do strony logowania
-header("Location: ../views/login.html");
+header("Location: ../index.php");
 exit();
 ?>
